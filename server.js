@@ -35,6 +35,23 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
     }
 })
 
+app.get("/user", (req, res, next) => {
+    var sql = "select * from user"
+    var params = []
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            res.status(400).json({ error: err.message })
+            return
+        }
+        res.json({
+            message: 'success',
+            data: rows
+        })
+    });
+});
+
+
+
 app.post('/data/users',function(req,res) {
     console.log(req.body)
     res.end("OK");
