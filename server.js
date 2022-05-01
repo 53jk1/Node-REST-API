@@ -133,22 +133,6 @@ app.post('/api/register/', (request, response) => {
     }
 });
 
-emailExists = (email) => {
-    return User.findOne({
-        where: {
-            email: email
-        }
-    }).then(user => {
-        if (user) {
-            return true;
-        } else {
-            return false;
-        }
-    }).catch(err => {
-        return false;
-    });
-}
-
 app.get("/user", (req, res, next) => {
     User.findAll().then(user => res.json(user));
 });
