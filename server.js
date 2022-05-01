@@ -3,6 +3,7 @@ const Sequelize = require('sequelize');
 var sqlite3 = require ('sqlite3').verbose()
 const DBSOURCE = "db.sqlite"
 const cors = require('cors');
+var session = require('express-session');
 var app = express();
 var PORT = process.env.PORT || 8080;
 var server = app.listen(PORT,() => console.log (`Listening on ${PORT}`));
