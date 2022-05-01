@@ -10,6 +10,163 @@ app.use(express.json());
 app.use(express.static(__dirname + '/static/'));
 app.use(cors());
 
+const sequelize = new Sequelize('database', 'root', 'root', {
+    dialect: 'sqlite',
+    storage: 'orm-db.sqlite'
+});
+
+const User = sequelize.define('user', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    name: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    email: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    password: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    phone: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    address: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    city: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    state: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    zip: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    country: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    credit_card: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    expiration: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    cvv: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    billing_zip: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    billing_address: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    billing_city: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    billing_state: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    billing_country: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    shipping_zip: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    shipping_address: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    shipping_city: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    shipping_state: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    shipping_country: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    shipping_method: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    payment_method: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    order_status: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    order_date: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    order_total: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    order_items: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    order_shipping: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    order_tax: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    order_discount: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    order_total_paid: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    order_total_due: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    order_total_refunded: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    order_total_cancelled: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    order_total_returned: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+}
+
 let db = new sqlite3.Database(DBSOURCE, (err) => {
     if (err) {
         console.error(err.message);
