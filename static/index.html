@@ -38,19 +38,19 @@
             }
 
             function onOpen(evt) {
-                writeToScreen("CONNECTED");
+                writeOnScreen("CONNECTED");
             }
 
             function onClose(evt) {
-                writeToScreen("DISCONNECTED");
+                writeOnScreen("DISCONNECTED");
             }
 
             function onMessage(evt) {
-                writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data + '</span>');
+                writeOnScreen('<span style="color: blue;">RESPONSE: ' + evt.data + '</span>');
             }
 
             function onError(evt) {
-                writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+                writeOnScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
             }
 
             function send(){
