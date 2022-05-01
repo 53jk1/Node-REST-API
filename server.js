@@ -165,7 +165,7 @@ const User = sequelize.define('user', {
         type: Sequelize.STRING,
         allowNull: false
     },
-}
+});
 
 let db = new sqlite3.Database(DBSOURCE, (err) => {
     if (err) {
