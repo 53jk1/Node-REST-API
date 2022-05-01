@@ -171,6 +171,12 @@ sequelize.sync()
     .then(() => console.log('Database & tables created!'))
     .catch(err => console.log(err));
 
+app.get("/create-users", (req, res, next) => {
+    User.create({name: "John", email: "john@mail.com", password: "12345", phone: "1234567890", address: "123 Main St", city: "New York", state: "NY", zip: "12345", country: "USA", credit_card: "1234567890123456", expiration: "12/20", cvv: "123", billing_zip: "12345", billing_address: "123 Main St", billing_city: "New York", billing_state: "NY", billing_country: "USA", shipping_zip: "12345", shipping_address: "123 Main St", shipping_city: "New York", shipping_state: "NY", shipping_country: "USA", shipping_method: "UPS", payment_method: "Visa", order_status: "Pending", order_date: "12/20/2019", order_total: "100", order_items: "1", order_shipping: "10", order_tax: "5", order_discount: "0", order_total_paid: "100", order_total_due: "0", order_total_refunded: "0", order_total_cancelled: "0", order_total_returned: "0"})
+    .then(() => User.create({name: "Jane", email: "jane@mail.com", password: "12345", phone: "1234567890", address: "123 Main St", city: "New York", state: "NY", zip: "12345", country: "USA", credit_card: "1234567890123456", expiration: "12/20", cvv: "123", billing_zip: "12345", billing_address: "123 Main St", billing_city: "New York", billing_state: "NY", billing_country: "USA", shipping_zip: "12345", shipping_address: "123 Main St", shipping_city: "New York", shipping_state: "NY", shipping_country: "USA", shipping_method: "UPS", payment_method: "Visa", order_status: "Pending", order_date: "12/20/2019", order_total: "100", order_items: "1", order_shipping: "10", order_tax: "5", order_discount: "0", order_total_paid: "100", order_total_due: "0", order_total_refunded: "0", order_total_cancelled: "0", order_total_returned: "0"}))
+    .then(user => res.json(user))
+});
+
 let db = new sqlite3.Database(DBSOURCE, (err) => {
     if (err) {
         console.error(err.message);
