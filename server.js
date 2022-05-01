@@ -167,6 +167,10 @@ const User = sequelize.define('user', {
     },
 });
 
+sequelize.sync()
+    .then(() => console.log('Database & tables created!'))
+    .catch(err => console.log(err));
+
 let db = new sqlite3.Database(DBSOURCE, (err) => {
     if (err) {
         console.error(err.message);
