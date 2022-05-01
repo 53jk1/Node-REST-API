@@ -133,6 +133,45 @@ app.post('/api/register/', (request, response) => {
     }
 });
 
+app.post('/api/login/', (request, response) => {
+    console.log("login")
+    if (request.body.email && request.body.password) {
+        User.findOne({
+            where: {
+                email: request.body.email,
+                password: request.body.password
+            }
+        }).then(user => {
+            if (user) {
+                request.session.loggedin = true;
+                request.session.email = user.email;
+                response.send({
+                    success: true,
+                    message: 'User logged in successfully!',
+                    email: user.email,
+                    id: user.id
+                });
+            } else {
+                response.send({
+                    success: false,
+                    message: 'Incorrect email or password!'
+                });
+            }
+        }).catch(err => {
+            response.send({
+                success: false,
+                message: 'Incorrect email or password!',
+                err: err
+            });
+        });
+    } else {
+        response.send({
+            success: false,
+            message: 'Please enter email and password!'
+        });
+    }
+});
+
 app.get("/user", (req, res, next) => {
     User.findAll().then(user => res.json(user));
 });
