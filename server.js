@@ -15,6 +15,12 @@ const wss = new WebSocket.Server({
     noServer: true,
 });
 
+server.on('upgrade', function (request, socket, head) {
+    wss.handleUpgrade(request, socket, head, function (ws) {
+        wss.emit('connection', ws, request);
+    });
+});
+
 wss.on('connection', function connection(ws) {
     ws.on('message', function incoming(message) {
         console.log('received: %s', message);
