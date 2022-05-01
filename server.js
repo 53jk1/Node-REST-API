@@ -56,9 +56,23 @@ function loginTest(request, response) {
     response.send({ loggedin: true, email: request.session.email });
 }
 
+function getUsers(request, response) {
+    console.log("getUsers")
+    var db = new sqlite3.Database(DBSOURCE);
+    db.all("SELECT * FROM users", function(err, rows) {
+        if (err) {
+            console.log(err);
+        } else {
+            response.send(rows);
+        }
+    });
+    db.close();
+}
+
 app.get('/login/:email', [login]);
 app.get('/api/logout/', [checkSessions, logout]);
 app.get('/api/test/', [checkSessions, loginTest]);
+app.get('/api/users/', [checkSessions, getUsers]);
 
 server.on('upgrade', function (request, socket, head) {
     wss.handleUpgrade(request, socket, head, function (ws) {
@@ -241,21 +255,6 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
         })
     }
 })
-
-app.get("/api/users/", (req, res, next) => {
-    var sql = "select * from user"
-    var params = []
-    db.all(sql, params, (err, rows) => {
-        if (err) {
-            res.status(400).json({ error: err.message })
-            return
-        }
-        res.json({
-            message: 'success',
-            data: rows
-        })
-    });
-});
 
 app.get("/user/:id", (req, res, next) => {
     var sql = "select * from user where id = ?"
