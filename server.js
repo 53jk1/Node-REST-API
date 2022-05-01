@@ -10,6 +10,9 @@ app.use(express.json());
 app.use(express.static(__dirname + '/static/'));
 app.use(cors());
 
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({port: 9090});
+
 const sequelize = new Sequelize('database', 'root', 'root', {
     dialect: 'sqlite',
     storage: 'orm-db.sqlite'
