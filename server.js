@@ -7,7 +7,12 @@ app.use(express.json());
 app.use(express.static(__dirname + '/static/'));
 app.use(cors());
 
-app.get ('/data/users',function(req,res) {
+app.post('/data/users',function(req,res) {
+    console.log(req.body)
+    res.end("OK");
+});
+
+app.get('/data/users',function(req,res) {
     res.json({
         users: [
             {
@@ -20,4 +25,4 @@ app.get ('/data/users',function(req,res) {
             },
         ]
     })
-})
+});
