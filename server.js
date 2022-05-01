@@ -69,10 +69,29 @@ function getUsers(request, response) {
     db.close();
 }
 
+function sendMessage(request, response) {
+    console.log("sendMessage")
+    var db = new sqlite3.Database(DBSOURCE);
+    if (request.body.message_text.length > 0) {
+        db.run("INSERT INTO messages (message_text, message_to_user_id, message_from_user_id, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)", [request.body.message_text, request.body.message_to_user_id, request.session.id, Date.now, Date.now], function(err) {
+            if (err) {
+                console.log(err);
+            } else {
+                response.send({ success: true });
+            }
+        });
+        db.close();
+    } else {
+        response.send({ success: false });
+    }
+}
+
 app.get('/login/:email', [login]);
 app.get('/api/logout/', [checkSessions, logout]);
 app.get('/api/test/', [checkSessions, loginTest]);
 app.get('/api/users/', [checkSessions, getUsers]);
+
+app.post('/api/messages', [checkSessions, sendMessage]);
 
 server.on('upgrade', function (request, socket, head) {
     wss.handleUpgrade(request, socket, head, function (ws) {
@@ -253,8 +272,25 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
 
             }
         })
+        db.run(`CREATE TABLE messages (
+            message_text VARCHAR(255) NOT NULL,
+            message_to_user_id VARCHAR(255) NOT NULL,
+            message_from_user_id VARCHAR(255) NOT NULL,
+            createdAt DATETIME NOT NULL,
+            updatedAt DATETIME NOT NULL
+        )`, (err) => {
+            if (err) {
+                console.error(err.message)
+            } else {
+                var insert = 'INSERT INTO messages (message_text, message_to_user_id, message_from_user_id, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)'
+                db.run(insert, ['Hello', '5b37c3bf07145b5f0f82c9946dbdc2b1', '5b37c3bf07145b5f0f82c9946dbdc2b2', DATETIME, DATETIME])
+                db.run(insert, ['Hi', '5b37c3bf07145b5f0f82c9946dbdc2b2', '5b37c3bf07145b5f0f82c9946dbdc2b1', DATETIME, DATETIME])
+                db.run(insert, ['How are you?', '5b37c3bf07145b5f0f82c9946dbdc2b3', '5b37c3bf07145b5f0f82c9946dbdc2b1', DATETIME, DATETIME])
+                db.run(insert, ['I am fine', '5b37c3bf07145b5f0f82c9946dbdc2b1', '5b37c3bf07145b5f0f82c9946dbdc2b3', DATETIME, DATETIME])
+            }
+        })
     }
-})
+});
 
 app.get("/user/:id", (req, res, next) => {
     var sql = "select * from user where id = ?"
