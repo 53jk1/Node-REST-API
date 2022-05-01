@@ -57,8 +57,8 @@ function loginTest(request, response) {
 }
 
 app.get('/login/:email', [login]);
-app.get('/logout/', [checkSessions, logout]);
-app.get('/test/', [checkSessions, loginTest]);
+app.get('/api/logout/', [checkSessions, logout]);
+app.get('/api/test/', [checkSessions, loginTest]);
 
 server.on('upgrade', function (request, socket, head) {
     wss.handleUpgrade(request, socket, head, function (ws) {
@@ -171,6 +171,37 @@ app.post('/api/login/', (request, response) => {
         });
     }
 });
+
+app.get("/api/login-test/"), (request, response) => {
+    console.log("login-test")
+    User.findOne({
+        where: {
+            email: request.session.email,
+            loggedIn: true
+        }
+    }).then(user => {
+        if (user) {
+            response.send({
+                success: true,
+                message: 'User logged in successfully!',
+                email: user.email,
+                id: user.id
+            });
+        } else {
+            response.send({
+                success: false,
+                message: 'User not logged in!'
+            });
+        }
+    }
+    ).catch(err => {
+        response.send({
+            success: false,
+            message: 'User not logged in!',
+            err: err
+        });
+    });
+};
 
 app.get("/user", (req, res, next) => {
     User.findAll().then(user => res.json(user));
