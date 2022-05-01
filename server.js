@@ -177,6 +177,10 @@ app.get("/create-users", (req, res, next) => {
     .then(user => res.json(user))
 });
 
+app.get("/user", (req, res, next) => {
+    User.findAll().then(users => res.json(users));
+});
+
 let db = new sqlite3.Database(DBSOURCE, (err) => {
     if (err) {
         console.error(err.message);
