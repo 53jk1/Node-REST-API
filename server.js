@@ -1,4 +1,5 @@
 var express = require('express');
+const Sequelize = require('sequelize');
 var sqlite3 = require ('sqlite3').verbose()
 const DBSOURCE = "db.sqlite"
 const cors = require('cors');
