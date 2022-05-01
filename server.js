@@ -181,6 +181,10 @@ app.get("/user", (req, res, next) => {
     User.findAll().then(users => res.json(users));
 });
 
+app.get("/user/:id", (req, res, next) => {
+    User.findByPk(req.params.id).then(user => res.json(user));
+});
+
 let db = new sqlite3.Database(DBSOURCE, (err) => {
     if (err) {
         console.error(err.message);
