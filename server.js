@@ -11,7 +11,9 @@ app.use(express.static(__dirname + '/static/'));
 app.use(cors());
 
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({port: 9090});
+const wss = new WebSocket.Server({
+    noServer: true,
+});
 
 wss.on('connection', function connection(ws) {
     ws.on('message', function incoming(message) {
