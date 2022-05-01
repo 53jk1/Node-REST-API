@@ -73,11 +73,29 @@ function sendMessage(request, response) {
     console.log("sendMessage")
     var db = new sqlite3.Database(DBSOURCE);
     if (request.body.message_text.length > 0) {
-        db.run("INSERT INTO messages (message_text, message_to_user_id, message_from_user_id, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)", [request.body.message_text, request.body.message_to_user_id, request.session.id, Date.now, Date.now], function(err) {
+        db.run("INSERT INTO messages (message_text, message_to_user_id, message_from_user_id, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)", [request.body.message_text, request.body.message_to_user_id, request.session.Id, Date.now, Date.now], function(err) {
             if (err) {
                 console.log(err);
             } else {
                 response.send({ success: true });
+            }
+        });
+        db.close();
+    } else {
+        response.send({ success: false });
+    }
+}
+
+function getMessages(req, response) {
+    console.log("getMessages")
+    console.log(req.params.id)
+    var db = new sqlite3.Database(DBSOURCE);
+    if (req.params.id) {
+        db.all("SELECT * FROM messages WHERE message_to_user_id = ? AND message_from_user_id ORDER BY createdAt ASC", [req.params.id, req.session.Id], function(err, rows) {
+            if (err) {
+                console.log(err);
+            } else {
+                response.send(rows);
             }
         });
         db.close();
@@ -92,6 +110,7 @@ app.get('/api/test/', [checkSessions, loginTest]);
 app.get('/api/users/', [checkSessions, getUsers]);
 
 app.post('/api/messages', [checkSessions, sendMessage]);
+app.get('/api/messages/:id', [checkSessions, getMessages]);
 
 server.on('upgrade', function (request, socket, head) {
     wss.handleUpgrade(request, socket, head, function (ws) {
