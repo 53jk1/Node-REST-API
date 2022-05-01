@@ -1,12 +1,14 @@
 var express = require('express');
 const Sequelize = require('sequelize');
 var sqlite3 = require ('sqlite3').verbose()
-const DBSOURCE = "db.sqlite"
+const DBSOURCE = "orm-db.sqlite"
+const DATETIME = '2022-05-01T11:31:31.471Z';
 const cors = require('cors');
 var session = require('express-session');
 var app = express();
 var PORT = process.env.PORT || 8080;
 var server = app.listen(PORT,() => console.log (`Listening on ${PORT}`));
+const crypto = require("crypto");
 app.use(express.json());
 app.use(express.static(__dirname + '/static/'));
 app.use(cors());
@@ -37,10 +39,10 @@ function login(request, response) {
     console.log("login")
     if (!request.session.loggedin) {
         request.session.loggedin = true;
-        request.session.user_name = request.params.user_name;
+        request.session.email = request.params.email;
         response.send({ loggedin: true });
     }
-    response.send({ loggedin: true, user_name: request.session.user_name });
+    response.send({ loggedin: true, email: request.session.email });
 }
 
 function logout(request, response) {
@@ -51,10 +53,10 @@ function logout(request, response) {
 
 function loginTest(request, response) {
     console.log("loginTest")
-    response.send({ loggedin: true, user_name: request.session.user_name });
+    response.send({ loggedin: true, email: request.session.email });
 }
 
-app.get('/login/:user_name', [login]);
+app.get('/login/:email', [login]);
 app.get('/logout/', [checkSessions, logout]);
 app.get('/test/', [checkSessions, loginTest]);
 
@@ -83,170 +85,72 @@ const sequelize = new Sequelize('database', 'root', 'root', {
     storage: 'orm-db.sqlite'
 });
 
-const User = sequelize.define('user', {
+const User = sequelize.define('users', {
     id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    name: {
         type: Sequelize.STRING,
+        primaryKey: true,
         allowNull: false
     },
     email: {
         type: Sequelize.STRING,
-        allowNull: false
+        unique: true,
     },
     password: {
         type: Sequelize.STRING,
-        allowNull: false
-    },
-    phone: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    address: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    city: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    state: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    zip: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    country: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    credit_card: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    expiration: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    cvv: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    billing_zip: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    billing_address: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    billing_city: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    billing_state: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    billing_country: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    shipping_zip: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    shipping_address: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    shipping_city: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    shipping_state: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    shipping_country: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    shipping_method: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    payment_method: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    order_status: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    order_date: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    order_total: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    order_items: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    order_shipping: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    order_tax: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    order_discount: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    order_total_paid: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    order_total_due: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    order_total_refunded: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    order_total_cancelled: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    order_total_returned: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
+    }
 });
 
 sequelize.sync()
     .then(() => console.log('Database & tables created!'))
     .catch(err => console.log(err));
 
-app.get("/create-users", (req, res, next) => {
-    User.create({name: "John", email: "john@mail.com", password: "12345", phone: "1234567890", address: "123 Main St", city: "New York", state: "NY", zip: "12345", country: "USA", credit_card: "1234567890123456", expiration: "12/20", cvv: "123", billing_zip: "12345", billing_address: "123 Main St", billing_city: "New York", billing_state: "NY", billing_country: "USA", shipping_zip: "12345", shipping_address: "123 Main St", shipping_city: "New York", shipping_state: "NY", shipping_country: "USA", shipping_method: "UPS", payment_method: "Visa", order_status: "Pending", order_date: "12/20/2019", order_total: "100", order_items: "1", order_shipping: "10", order_tax: "5", order_discount: "0", order_total_paid: "100", order_total_due: "0", order_total_refunded: "0", order_total_cancelled: "0", order_total_returned: "0"})
-    .then(() => User.create({name: "Jane", email: "jane@mail.com", password: "12345", phone: "1234567890", address: "123 Main St", city: "New York", state: "NY", zip: "12345", country: "USA", credit_card: "1234567890123456", expiration: "12/20", cvv: "123", billing_zip: "12345", billing_address: "123 Main St", billing_city: "New York", billing_state: "NY", billing_country: "USA", shipping_zip: "12345", shipping_address: "123 Main St", shipping_city: "New York", shipping_state: "NY", shipping_country: "USA", shipping_method: "UPS", payment_method: "Visa", order_status: "Pending", order_date: "12/20/2019", order_total: "100", order_items: "1", order_shipping: "10", order_tax: "5", order_discount: "0", order_total_paid: "100", order_total_due: "0", order_total_refunded: "0", order_total_cancelled: "0", order_total_returned: "0"}))
-    .then(user => res.json(user))
+app.post('/api/register/', (request, response) => {
+    console.log("register")
+    console.log(request.body)
+    if (request.body.email && request.body.password) {
+        User.create({
+            id: crypto.randomBytes(16).toString("hex"),
+            email: request.body.email,
+            password: request.body.password
+        }).then(user => {
+            response.send({
+                success: true,
+                message: 'User created successfully!',
+                user: user
+            });
+        }).catch(err => {
+            response.send({
+                success: false,
+                message: 'User already exists!',
+                err: err
+            });
+        });
+    } else {
+        response.send({
+            success: false,
+            message: 'Please enter email and password!'
+        });
+    }
 });
 
+emailExists = (email) => {
+    return User.findOne({
+        where: {
+            email: email
+        }
+    }).then(user => {
+        if (user) {
+            return true;
+        } else {
+            return false;
+        }
+    }).catch(err => {
+        return false;
+    });
+}
+
 app.get("/user", (req, res, next) => {
-    User.findAll().then(users => res.json(users));
+    User.findAll().then(user => res.json(user));
 });
 
 app.get("/user/:id", (req, res, next) => {
@@ -262,21 +166,22 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
         console.error(err.message);
     } else {
         console.log('Connected to SQLite database.')
-        db.run(`CREATE TABLE user (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name text,
-            age int,
-            password text
+        db.run(`CREATE TABLE users (
+            id VARCHAR(255) NOT NULL PRIMARY KEY,
+            email UNIQUE,
+            password VARCHAR(255),
+            createdAt DATETIME NOT NULL,
+            updatedAt DATETIME NOT NULL
         )`, (err) => {
             if (err) {
                 console.error(err.message)
             } else {
-                var insert = 'INSERT INTO user (name, age, password) VALUES (?, ?, ?)'
-                db.run(insert, ['John', 20, '123456'])
-                db.run(insert, ['Jane', 21, '123456789'])
-                db.run(insert, ['Jack', 22, 'Qwerty'])
-                db.run(insert, ['Jill', 23, 'Password'])
-                db.run(insert, ['Joe', 24, '12345'])
+                var insert = 'INSERT INTO users (id, email, password, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)'
+                db.run(insert, ['5b37c3bf07145b5f0f82c9946dbdc2b1', "john@wp.pl", '123456', DATETIME, DATETIME])
+                db.run(insert, ['5b37c3bf07145b5f0f82c9946dbdc2b2', "jane@wp.pl", '123456789', DATETIME, DATETIME])
+                db.run(insert, ['5b37c3bf07145b5f0f82c9946dbdc2b3', "jackspaniel@wp.pl", 'Qwerty', DATETIME, DATETIME])
+                db.run(insert, ['5b37c3bf07145b5f0f82c9946dbdc2b4', "jill@wp.pl", 'Password', DATETIME, DATETIME])
+                db.run(insert, ['5b37c3bf07145b5f0f82c9946dbdc2b5', "joe@wp.pl", '12345', DATETIME, DATETIME])
 
             }
         })
@@ -316,19 +221,4 @@ app.get("/user/:id", (req, res, next) => {
 app.post('/data/users',function(req,res) {
     console.log(req.body)
     res.end("OK");
-});
-
-app.get('/data/users',function(req,res) {
-    res.json({
-        users: [
-            {
-                name: 'John',
-                age: 25
-            },
-            {
-                name: 'Jane',
-                age: 30
-            },
-        ]
-    })
 });
